@@ -1,0 +1,32 @@
+name: pocketledger_workspace
+publish_to: none
+description: PocketLedger monorepo - mobile-first, on-device AI finance notebook.
+version: 0.1.0
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.32.0"
+
+dev_dependencies:
+  melos: ^6.2.0
+  very_good_analysis: ^7.0.0
+  commitlint_cli: ^0.6.0
+
+workspace:
+  - apps/ios
+  - apps/android
+  - apps/web
+  - apps/backend
+  - packages/sdk
+  - packages/math_engine
+  - packages/ai_runtime
+  - packages/data_layer
+  - packages/ui
+  - packages/personas
+  - packages/frameworks
+  - packages/checkin
+  - packages/export
+  - packages/analytics
+  - packages/privacy
+  - packages/config
+  - packages/fixtures

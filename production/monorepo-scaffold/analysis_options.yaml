@@ -1,0 +1,36 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # Flutter-specific
+    avoid_print: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_constructors_first: true
+    unawaited_futures: true
+    use_super_parameters: true
+
+    # Security-critical (financial app)
+    avoid_dynamic_calls: true
+    avoid_type_to_string: true
+    avoid_returning_null_for_void: true
+    cancel_subscriptions: true
+    close_sinks: true
+    literal_only_boolean_expressions: true
+    no_adjacent_strings_in_list: true
+    no_logic_in_create_state: true
+    prefer_relative_imports: true
+    test_types_in_equals: true
+    tighten_type_of_initializing_formals: true
+    unnecessary_lambdas: true
+    unnecessary_null_aware_assignments: true

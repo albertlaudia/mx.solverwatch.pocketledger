@@ -1,0 +1,59 @@
+name: pocketledger
+repository: https://github.com/pocketledger/pocketledger
+
+packages:
+  - apps/*
+  - packages/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    run: melos exec -c 1 -- "fvm dart analyze ."
+    description: Run `dart analyze` in all packages.
+
+  format:
+    run: melos exec -c 1 -- "fvm dart format --set-exit-if-changed ."
+    description: Check formatting in all packages.
+
+  format:fix:
+    run: melos exec -c 1 -- "fvm dart format ."
+    description: Format all packages.
+
+  test:
+    run: melos exec -c 1 -- "fvm flutter test --coverage --test-randomize-ordering-seed random"
+    description: Run all unit tests with random ordering.
+
+  math-audit:
+    run: melos exec -c 1 --dir=packages/math_engine -- "fvm flutter test test/math_audit/"
+    description: Run the 200-case deterministic math audit.
+
+  redteam:
+    run: melos exec -c 1 --dir=packages/ai_runtime -- "fvm flutter test test/redteam/"
+    description: Run the 100-question adversarial redteam suite.
+
+  privacy-audit:
+    run: bash infra/scripts/privacy_audit.sh
+    description: Scan ai_runtime + data_layer for outbound network calls outside the allowlist.
+
+  build:all:
+    run: melos exec -c 1 -- "fvm flutter build"
+    description: Build all apps using project-specific Flutter versions.
+
+  build_runner:all:
+    run: melos exec -c 1 -- "fvm dart run build_runner build --delete-conflicting-outputs"
+    description: Run build_runner for codegen (Drift, json_serializable, etc.).
+
+  clean:
+    run: melos exec -c 1 -- "fvm flutter clean"
+    description: Clean all build artifacts.
+
+  version:
+    run: melos version --all
+    description: Bump versions and generate changelog.
+
+  publish:done:
+    run: melos publish --dry-run
+    description: Validate that all packages are ready to publish.
