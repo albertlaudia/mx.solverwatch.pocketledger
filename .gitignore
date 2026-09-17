@@ -72,3 +72,19 @@ yarn-error.log*
 *.class
 *.o
 *.obj
+
+# ============================================================
+# Media assets — never commit binary media to git
+# ============================================================
+# /media/ holds brand, app-store, play-store, marketing-site,
+# and pitch-deck assets. They live on disk only; designers use
+# Figma / Drive / S3 to collaborate, not git.
+#
+# See /media/README.md for the full spec.
+/media/**
+!/media/README.md
+!/media/brand/README.md
+!/media/app-store/README.md
+!/media/play-store/README.md
+!/media/marketing-site/README.md
+!/media/pitch-deck/README.md

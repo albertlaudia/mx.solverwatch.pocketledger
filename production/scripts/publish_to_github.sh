@@ -13,8 +13,8 @@
 
 set -euo pipefail
 
-ORG="${ORG:-pocketledger}"
-REPO="${REPO:-pocketledger}"
+ORG="${ORG:-albertlaudia}"
+REPO="${REPO:-mx.solverwatch.pocketledger}"
 PRIVATE="${PRIVATE:-false}"
 
 if [ -z "${GITHUB_PAT:-}" ]; then

@@ -48,6 +48,17 @@ mkdir -p apps/ios/{ios,lib/{features/{chat,checkin,goals,settings,export,onboard
 mkdir -p apps/android/{android,lib,test,assets}
 mkdir -p apps/web/{lib,web,test}
 mkdir -p apps/backend/{lib/{auth,billing,telemetry,pl},test}
+
+# /media/ — gitignored brand and store assets. Folders + READMEs are committed; binary assets are not.
+mkdir -p media/{app-store,play-store,brand,marketing-site,pitch-deck}
+mkdir -p media/app-store/{icon,screenshots,metadata,store-listing-screenshots}
+mkdir -p media/app-store/screenshots/{iPhone-6.7-inch,iPhone-6.5-inch,iPhone-5.5-inch,iPad-12.9-inch}
+mkdir -p media/play-store/{icon,screenshots,metadata,store-listing-graphics}
+mkdir -p media/play-store/icon/adaptive
+mkdir -p media/play-store/screenshots/{phone,tablet-7-inch,tablet-10-inch}
+mkdir -p media/brand/{logo,wordmark,colors,fonts}
+mkdir -p media/marketing-site/{hero,favicon}
+mkdir -p media/pitch-deck/{speaker-photos,demo-recordings,supporting-graphics}
 echo "OK"
 
 # 5. Create the 16 package pubspec.yaml files
@@ -94,9 +105,11 @@ generate_pubspec "pocketledger_config" "Shared analysis_options.yaml + lints." "
 generate_pubspec "pocketledger_fixtures" "200 math cases + 100 redteam questions." "packages/fixtures"
 
 # Apps get their own pubspec
+# iOS bundle id: com.solverwatch.pocketledger
+# Android application id: com.solverwatch.pocketledger
 cat > "apps/ios/pubspec.yaml" <<EOF
 name: pocketledger_ios
-description: PocketLedger for iOS.
+description: PocketLedger for iOS (com.solverwatch.pocketledger).
 version: 0.1.0+1
 publish_to: none
 
@@ -161,8 +174,104 @@ EOF
 
 # Android pubspec mirrors iOS with minor deltas (different plugins)
 cp "apps/ios/pubspec.yaml" "apps/android/pubspec.yaml"
-sed -i 's/name: pocketledger_ios/name: pocketledger_android/' "apps/android/pubspec.yaml"
-sed -i 's/PocketLedger for iOS./PocketLedger for Android./' "apps/android/pubspec.yaml"
+sed -i "s/name: pocketledger_ios/name: pocketledger_android/" "apps/android/pubspec.yaml"
+sed -i "s/PocketLedger for iOS (com.solverwatch.pocketledger)./PocketLedger for Android (com.solverwatch.pocketledger)./" "apps/android/pubspec.yaml"
+
+# Generate Android app/build.gradle with applicationId com.solverwatch.pocketledger
+mkdir -p apps/android/android/app
+cat > "apps/android/android/app/build.gradle" <<\'GRADLE\'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace "com.solverwatch.pocketledger"
+    compileSdk 35
+    ndkVersion "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    defaultConfig {
+        applicationId "com.solverwatch.pocketledger"
+        minSdkVersion 30
+        targetSdkVersion 35
+        versionCode 1
+        versionName "0.1.0"
+    }
+
+    signingConfigs {
+        release {
+            // populated by Fastlane match / key.properties at build time
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
+GRADLE
+
+# Generate iOS Info.plist with bundle id com.solverwatch.pocketledger
+mkdir -p apps/ios/ios/Runner
+cat > "apps/ios/ios/Runner/Info.plist" <<\'PLIST\'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>PocketLedger</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.solverwatch.pocketledger</string>
+    <key>CFBundleName</key>
+    <string>pocketledger</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+    <key>NSPrivacyTracking</key>
+    <false/>
+</dict>
+</plist>
+PLIST
 
 # Web pubspec
 cat > "apps/web/pubspec.yaml" <<EOF
